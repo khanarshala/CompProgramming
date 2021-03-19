@@ -1,0 +1,41 @@
+public static void main(String[] args) {
+	
+	int[][] nodes1 = {{1,2,9}, {2,3,11}, {3,4,6},{4,5,1},{5,1,4},{3,5,10}};
+	int x1=2, y1=3, numOfNodes1=5;
+	int[][] nodes2 = {{1,2,6}, {1,4,9}, {2,4,10},{2,3,6},{3,4,11}};
+	int x2=2, y2=3, numOfNodes2=4;
+	System.out.println(getMinPath(nodes1, numOfNodes1, x1, y1));
+	System.out.println(getMinPath(nodes2, numOfNodes2, x2, y2));
+}
+
+static int res = Integer.MAX_VALUE;
+
+private static int getMinPath(int[][] nodes, int numOfNodes, int x, int y) {
+	res = Integer.MAX_VALUE;
+	Set<Integer> visited = new HashSet<>();
+	Map<Integer, Map<Integer, Integer>> map = new HashMap<>();
+	for(int[] n : nodes) {
+		map.putIfAbsent(n[0], new HashMap<>());
+		map.putIfAbsent(n[1], new HashMap<>());
+		map.get(n[0]).put(n[1], n[2]);
+		map.get(n[1]).put(n[0], n[2]);
+	}
+	dfs(map, visited, x, y, 0, 1);
+	return res;
+}
+
+private static void dfs(Map<Integer, Map<Integer, Integer>> map, Set<Integer> visited, int x, int y, int tmp, int cur) {
+	if((visited.contains(y) && !visited.contains(x)) || tmp > res)
+		return;
+	if(cur == map.keySet().size() && visited.contains(x) && visited.contains(y)) {
+		res = Math.min(tmp,  res);
+		return;
+	}
+	visited.add(cur);
+	for(Map.Entry<Integer, Integer> nei : map.get(cur).entrySet()) {
+		if(!visited.contains(nei.getKey())) {
+			dfs(map, visited, x, y, tmp + nei.getValue(), nei.getKey());
+		}
+	}
+	visited.remove(cur);
+}
